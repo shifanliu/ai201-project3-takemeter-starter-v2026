@@ -42,6 +42,9 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
+**Community:** r/rpg — a public Reddit community for discussing tabletop roleplaying games.
+**URL:** https://www.reddit.com/r/rpg/
+
 
 
 ---
