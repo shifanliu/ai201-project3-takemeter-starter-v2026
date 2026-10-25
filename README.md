@@ -45,6 +45,12 @@
 **Community:** r/rpg — a public Reddit community for discussing tabletop roleplaying games.
 **URL:** https://www.reddit.com/r/rpg/
 
+### Candidate distinctions (from reading r/rpg)
+
+1. Some posts provide concrete examples, while others express general opinions without examples.
+2. Some posts explain reasons or outcomes, while others simply express likes or dislikes.
+3. Some help-seeking posts describe attempted solutions and their results, while others only ask a question.
+
 
 
 ---
