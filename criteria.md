@@ -51,63 +51,76 @@ whether you hit them:
 
 ---
 
-## 1.
+## 1. Overall accuracy is at least 0.65
 
-<!-- Your criterion. It must name a number. -->
+On the held-out test split, overall accuracy is at least 0.65 on every one of
+the three seeds (not just on average).
 
-
-
-**Why this target:**
-
-
-
----
-
-## 2.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** I have four labels, so a coin-flip guesser gets about 0.25,
+and always guessing my biggest label (probably `help_request`) would score
+roughly 0.35-0.40. 0.65 is clearly above both, and it's where I'd honestly call
+the classifier useful for sorting r/rpg posts. I didn't go higher because with
+only ~200 posts and a boundary I already know is fuzzy, 0.80 would be a guess
+about a model I haven't seen.
 
 ---
 
-## 3.
+## 2. No label has an F1 below 0.60
 
-<!-- Your criterion. -->
+Each of the four labels (`analysis`, `help_request`, `suggestion`,
+`experience_report`) has a test-set F1 of at least 0.60 on every seed.
 
-
-
-**Why this target:**
-
-
-
----
-
-## 4.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** Accuracy can hide a label the model never learned. With
+~200 posts and a 15% test split, my smallest label will have only about 6-10
+test examples, so its F1 will swing between seeds. That is why the floor is
+set slightly below my overall accuracy target of 0.65: 0.60 says "the model
+has learned something clearly useful for every label, including the smallest"
+without demanding stability the data can't give. 0.50 felt too loose, since it
+would pass a label the model gets wrong about half the time.
 
 ---
 
-## 5.
+## 3. `analysis` posts are called `suggestion` at most 30% of the time
 
-<!-- Your criterion. -->
+In the confusion matrix on the test split, at most 30% of true `analysis` posts
+are predicted as `suggestion`, on every seed.
 
+**Why this target:** This is the boundary my taxonomy is least sure about. Posts
+like "I argue X, so every GM should do Y" sit between the two, and my decision
+rule resolves them by the closing call to action. If the model can't keep these
+apart even 7 times in 10, the label definitions (not the training run) are the
+likely problem. 30% allows for a genuinely ambiguous minority of posts.
 
+---
 
-**Why this target:**
+## 4. No label is above 50% or below 15% of `labels.csv`
 
+Of the rows in `labels.csv`, every label makes up between 15% and 50%
+(for 200 rows: between 30 and 100 posts each).
 
+**Why this target:** The course cap is 70%, but with four labels a 70% label
+would mean the model can score 0.70 accuracy by guessing one word. The 15%
+floor guarantees roughly 4-5 test examples at the very least, and I expect more.
+I expect `help_request` to be my biggest label because r/rpg is full of
+"which game should I use?" posts, so 50% is a deliberate guard against it
+swamping the rest.
+
+---
+
+## 5. The more confident half of predictions is at least 0.80 accurate
+
+On the test split, I sort the posts by the model's top predicted probability
+and take the more confident half (rounded up). Accuracy on that half is at
+least 0.80 on every seed.
+
+**Why this target:** A confident prediction should be right more often than an
+unsure one, otherwise the confidence score is useless for deciding which
+posts to trust. Using "the top half" instead of a fixed probability cutoff
+means the check always has enough posts (about 15 of ~30), even if the model
+is rarely very confident. 0.80 is 0.15 above my overall target of 0.65, so
+it says the model's confidence carries real information. I expect the
+`help_request` posts, which are mostly phrased as questions, to dominate the
+confident half.
 
 ---
 
