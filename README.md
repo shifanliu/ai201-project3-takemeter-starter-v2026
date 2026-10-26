@@ -342,31 +342,52 @@ seeds will show whether this is stable.
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
+Seeds 42, 7 and 2024, all on CPU (`device: cpu`, torch 2.14.1+cpu), 33 test posts per seed.
+Source: `results_three_seeds_before.json` (`RUN_LABEL = "before"`). Verdicts are filled in under
+Verdicts and Diagnoses.
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | >= 0.65 on every seed | 0.424 | 0.424 | 0.424 | (see Verdicts) |
+| 2. Every label F1 | >= 0.60 on every seed | analysis 0.000, help_request 0.596, suggestion 0.000, experience_report 0.000 | same | same | (see Verdicts) |
+| 3. `analysis` called `suggestion` | <= 30% | 0 of 7 (0%) | 0 of 7 (0%) | 0 of 7 (0%) | (see Verdicts) |
+| 4. Label balance in `labels.csv` | each label 15%-50% | help_request 43.0%, analysis 22.0%, experience_report 22.0%, suggestion 13.1% | same (data, not seed) | same | (see Verdicts) |
+| 5. Confidence: top half accuracy | >= 0.80 on every seed | not saved (top third: 0.818) | not saved (top third: 0.818) | not saved (top third: 0.818) | (see Verdicts) |
+
+Full spread table from section 6:
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---|---|---|---|
+| Overall accuracy | 0.424 | 0.424 | 0.424 | 0.000 |
+| Macro F1 | 0.149 | 0.149 | 0.149 | 0.000 |
+| F1 - `analysis` | 0.000 | 0.000 | 0.000 | 0.000 |
+| F1 - `help_request` | 0.596 | 0.596 | 0.596 | 0.000 |
+| F1 - `suggestion` | 0.000 | 0.000 | 0.000 | 0.000 |
+| F1 - `experience_report` | 0.000 | 0.000 | 0.000 | 0.000 |
+
+**A zero spread is not stability.** The notebook prints "Stable enough to trust", but identical
+numbers on three different seeds mean the model predicted `help_request` for every test post
+every time (see the matrix). A constant predictor has no variance to measure, so these three
+runs show the model learned nothing beyond the majority class, not that the result is reliable.
+Training loss only moved from about 1.35 to 1.25 over 3 epochs, and validation accuracy stayed
+at 0.4375 after every epoch on every seed.
 
 ### Confusion matrix
 
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
+Identical on all three seeds. Rows are true labels, columns are the model's guesses.
 
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| true \ predicted | analysis | help_request | suggestion | experience_report |
+|---|---|---|---|---|
+| **analysis** | 0 | 7 | 0 | 0 |
+| **help_request** | 0 | 14 | 0 | 0 |
+| **suggestion** | 0 | 5 | 0 | 0 |
+| **experience_report** | 0 | 7 | 0 | 0 |
 
 **My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
-
-
+The biggest off-diagonal cell is 7, in two places: 7 real `analysis` posts and 7 real
+`experience_report` posts were both called `help_request`, and nothing went the other way,
+because the model put all 33 posts in the `help_request` column. It means the model did not
+learn any boundary with `help_request`, in either direction; it collapsed to the majority label.
 
 ---
 
