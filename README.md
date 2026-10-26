@@ -496,9 +496,25 @@ revisit the diagnoses of criteria 1 and 2 once the agreement check is run.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** One training setting, the learning rate: 2e-5 -> 5e-5. Epochs stay at 3,
+batch size at 16, max length at 128, and the data, labels and seeds (42, 7, 2024) are
+untouched. `RUN_LABEL = "after"`, so the numbers go to `results_three_seeds_after.json` and
+`results_three_seeds_before.json` is not overwritten. I picked the learning rate because
+the training loss barely moved, which a larger step size attacks directly, and because a
+longer run (more epochs) would have taken much more time on CPU.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** Verdicts and Diagnoses for criteria 1 and 2: the model
+predicted `help_request` for all 33 test posts on every seed, training loss only fell from
+about 1.35 to 1.25, and validation accuracy stayed at 0.4375 after every epoch. At batch
+size 16 that is about 28 optimizer steps in total, so the model likely stopped before it
+learned anything beyond the majority label. This is the one diagnosis I have evidence for
+without the agreement report, which is why I picked it. It does not fix criterion 4
+(`suggestion` at 13.1% of the data); more training will not add examples.
+
+**Prediction, written before the run:** I expect accuracy and macro F1 to rise above the
+majority-class floor (0.424 / 0.149) and at least one more label to get a non-zero F1.
+I do not expect criteria 1 and 2 to be met on all three seeds, and I think `suggestion`
+(19 training posts) will stay the weakest label.
 
 ### Run Log — After
 
