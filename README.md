@@ -45,6 +45,12 @@
 **Community:** r/rpg — a public Reddit community for discussing tabletop roleplaying games.
 **URL:** https://www.reddit.com/r/rpg/
 
+This project classifies public r/rpg posts by what the post is mainly trying to do.
+Each post is sorted into one of four labels: `analysis` (argues or evaluates a viewpoint
+with reasons or examples), `help_request` (asks for help, advice or recommendations),
+`suggestion` (recommends an approach, tool or game), or `experience_report` (recounts
+personal play or campaign experience). The model is a fine-tuned DistilBERT.
+
 ### Candidate distinctions (from reading r/rpg)
 
 1. Some posts provide concrete examples, while others express general opinions without examples.
@@ -127,45 +133,74 @@ a question to the community are `help_request` regardless of how much backstory 
 <!-- Where you collected from, how you labelled, your counts, and three hard
      cases. -->
 
-**Where the posts came from:**
+**Where the posts came from:** Public posts from r/rpg, downloaded as JSON from
+Reddit's public listing and search endpoints (no login): the top posts of the year,
+and searches by post flair (Game Suggestion, Discussion, Actual Play, Game Master,
+Table Troubles, Resources/Tools, Basic Questions). I kept the title plus the whole
+body as one text. I left out link-only posts, news and announcements, crowdfunding and
+self-promotion, AMAs, obituaries, repeated episode-announcement posts, and posts that
+only ask a general discussion question or state a one-line opinion, because none of
+my four labels fit them. 214 posts were kept; `labels.csv` is one unsplit file.
 
-**How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
-Say so plainly — the disclosure is required, not penalised. -->
+**How I labelled them:** I did **not** label any posts cold. All 214 rows were
+pre-labelled by Claude from my four definitions and my decision rule, with borderline
+cases flagged, and I then reviewed them. Their `note` column says `pre-labelled`.
+Because no rows are cold, I have no unaided baseline of my own labelling.
 
 **Counts per label:**
 
 | Label | Count | Share |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+| `help_request` | 92 | 43% |
+| `analysis` | 47 | 22% |
+| `experience_report` | 47 | 22% |
+| `suggestion` | 28 | 13% |
+| **Total** | 214 | 100% |
+
+No label is above 70% (or my own 50% cap). `suggestion` is the thinnest label at 13%, just
+under my own 15% floor in criteria 4; I did not relabel borderline posts to hide this.
 
 **Three hard cases**
 
-<!-- Any post that made you pause: what it was, which two labels it could have
-     been, and what you chose. These are worth more than the easy 190. -->
-
 **1.**
-> *The post:*
+> *The post:* "Who gets inconvenienced if your character never comes home?" — a GM
+> describes a question they now ask players at character creation, tells how it played
+> out in a small-town campaign, and argues that tragic backstories feel disconnected.
 >
-> *Could have been:*
+> *Could have been:* `suggestion` / `experience_report` (and `analysis`)
 >
-> *I chose, because:*
+> *I chose* `suggestion`, because the post is built around "try asking this question" and
+> the anecdote is there to support that recommendation. If it had only told the story,
+> it would be `experience_report`.
 
 **2.**
-> *The post:*
+> *The post:* "The fact that I'm dumb doesn't mean NPC's are dumb: Importance of
+> declaring intent" — argues that a GM can't be expected to catch a player's hidden master
+> plan, using several examples, and ends with "if you have a master plan then declare
+> what you're going for."
 >
-> *Could have been:*
+> *Could have been:* `analysis` / `suggestion`
 >
-> *I chose, because:*
+> *I chose* `analysis`, because the main body is an argument about *why* the GM can't catch
+> hidden plans; the closing request follows from it. This is not consistent with how I
+> treated posts that end "you should do X" (which I called `suggestion`), and it is the
+> weakest point of my decision rule.
 
 **3.**
-> *The post:*
+> *The post:* "Please, players, find the time to play" — a GM's rant about players
+> being disrespectful of their time, ending with "players need to do BETTER".
 >
-> *Could have been:*
+> *Could have been:* `suggestion` / `analysis` / `experience_report`
 >
-> *I chose, because:*
+> *I chose* `suggestion`, because the post tells a group of readers what to do, even though
+> it is mostly venting from personal experience. A reasonable reader could call it
+> `experience_report`; I expect the model to find this kind of post hard.
+
+**A gap in the taxonomy.** Two kinds of common r/rpg posts fit none of my four labels:
+one-line opinions with no reasoning ("I am tired of 5e") and pure discussion questions
+that are not asking for help ("What's your favourite RPG nobody knows about?"). I left
+them out of the dataset, so the model has never seen them and will force them into one
+of the four labels.
 
 ---
 
@@ -196,19 +231,32 @@ of next unit's variance. -->
      workflow and disclosing it costs you nothing. Not disclosing it is the
      problem. -->
 
-**Moment 1**
+**Moment 1 — stress-testing my labels**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Claude to write eight posts sitting on the boundaries of my four label definitions.
+- *What came back:* Eight short posts plus an answer key. Most were classifiable from my
+  decision rule, but number 8 (argues a cause, then says "every GM should insist on it")
+  could not be separated cleanly between `analysis` and `suggestion`.
+- *What I changed:* I kept the rule (label by what the post asks the reader to do or
+  believe at the end) but wrote down that `analysis` vs `suggestion` is its weakest
+  boundary, and in this README the NPC post is the clearest case where I did not apply
+  it consistently. *(Fill in anything you changed in the definitions after this.)*
 
-**Moment 2**
+**Moment 2 — setting my acceptance criteria**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked Claude to propose all five acceptance criteria and their reasons
+  (the assignment says to write them yourself, so this is a disclosure).
+- *What came back:* Five numbered criteria with targets and reasons tied to my four labels.
+- *What I changed:* I read them and accepted the numbers, replaced the criterion that depended on
+  re-labelling cold posts with a confidence criterion (the more confident half of predictions
+  at least 0.80 accurate), and raised the per-label F1 floor from 0.50 to 0.60 because 0.50 felt
+  too loose.
 
-**Pre-labelling disclosure:**
+**Pre-labelling disclosure:** Claude pre-labelled all 214 rows of `labels.csv` from my four
+definitions and my decision rule, including the 20 posts I had meant to label cold. No row is
+a cold label. Claude also did the filtering of the downloaded Reddit JSON into posts with
+text and chose which posts to leave out. I reviewed the labels afterwards. *(Edit this
+sentence to say exactly what you checked and how many labels you changed.)*
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
