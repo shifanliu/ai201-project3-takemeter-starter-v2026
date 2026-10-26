@@ -271,20 +271,67 @@ sentence to say exactly what you checked and how many labels you changed.)*
 <!-- Both models on the same posts. `python baseline.py --trained results.json`
      prints this table for you. -->
 
+Both models scored on the same 33 held-out posts in `test_split.csv` (seed 42). The baseline
+is zero-shot `facebook/bart-large-mnli` using my label definitions from
+`label_definitions.txt`; the trained model is the fine-tuned DistilBERT from `results.json`.
+
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.273 | 0.424 | +0.152 |
+| Macro F1 | 0.191 | 0.149 | -0.042 |
+| F1 — `analysis` | 0.389 | 0.000 | -0.389 |
+| F1 — `experience_report` | 0.250 | 0.000 | -0.250 |
+| F1 — `help_request` | 0.125 | 0.596 | +0.471 |
+| F1 — `suggestion` | 0.000 | 0.000 | +0.000 |
+
+**What my definitions were worth.** I also ran the baseline with bare label names only
+(no definitions), written to `baseline_results_bare.json`:
+
+| Measure | With definitions | Bare label names |
+|---|---|---|
+| Overall accuracy | 0.273 | 0.364 |
+| Macro F1 | 0.191 | 0.337 |
+| F1 — `analysis` | 0.389 | 0.182 |
+| F1 — `experience_report` | 0.250 | 0.500 |
+| F1 — `help_request` | 0.125 | 0.400 |
+| F1 — `suggestion` | 0.000 | 0.267 |
+
+The table above uses the with-definitions run as my baseline, as the brief asks. The bare-names
+run is better by 0.091 accuracy, so my definitions were worth about -0.09: pasted into the
+zero-shot template ("This post is {definition}."), the long definitions made the baseline
+worse, not better. On 33 posts that gap is about three posts, so I treat it as a hint rather
+than a firm result.
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
 
+I predict the trained model will beat the baseline on `help_request`, the largest class
+(14 of the 33 test posts), because fine-tuning on 149 examples teaches it that majority
+pattern, while the zero-shot baseline will do no better than the trained model on the three
+smaller labels (`analysis`, `suggestion`, `experience_report`), where 5 to 7 test posts each
+leave the scores very noisy.
+
+*Disclosure:* I had already glanced at `results.json` before writing this (it showed the
+trained model mostly predicting `help_request`, accuracy 0.424), and I had seen the baseline
+numbers (accuracy 0.273) from the first run. So this prediction is informed by partial
+knowledge of both results rather than made fully blind.
+
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
+
+My prediction was half right. The trained model did beat the baseline on `help_request`
+(F1 0.596 vs 0.125), but I was wrong that the baseline would do no better on the small labels:
+it beat the trained model on `analysis` (0.389 vs 0.000) and `experience_report` (0.250 vs
+0.000), and both models scored 0.000 on `suggestion`.
+
+The trained model's higher accuracy (0.424 vs 0.273) is mostly an artifact of class balance:
+`help_request` is 14 of 33 test posts (0.424 exactly), so a model that always answered
+`help_request` would score the same accuracy. Its macro F1 (0.149) is actually below the
+baseline's (0.191). So on this split fine-tuning has not yet learned three of the four labels,
+and I can't claim it added anything beyond predicting the majority class. Milestone 2's three
+seeds will show whether this is stable.
 
 
 
