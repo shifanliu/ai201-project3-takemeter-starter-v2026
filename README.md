@@ -63,33 +63,60 @@
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
 
-### `label_one`
+### `analysis`
 
-**Definition:**
-
-**Example 1:**
->
-
-**Example 2:**
->
-
-### `label_two`
-
-**Definition:**
+**Definition:** Primarily presents or evaluates a viewpoint, supporting it with explicit reasoning, concrete examples, or facts.
 
 **Example 1:**
->
+> "The fact that I'm dumb doesn't mean NPC's are dumb: Importance of declaring intent" — argues that the GM can't be expected to catch a player's hidden master plan, using the polymorph-sword, glyphs-of-warding and devil-wordplay scenarios as support, and concludes players should declare intent.
 
 **Example 2:**
->
+> "Can you think of an innovative roleplaying game rule, mechanic, or procedure that expanded your notions of what a good RPG could be?" — the author uses concrete examples of differently named skills in *Unknown Armies* to explain how a skill system can express both a character's abilities and their personality.
+
+### `help_request`
+
+**Definition:** Primarily asks others for help solving a problem, offering advice, or recommending options.
+
+**Example 1:**
+> "Mass Effect RPG System" — "I am looking for a system to run in the setting… Anyone with experience running any of these games… could you tell me why you think X system works well with the setting?"
+
+**Example 2:**
+> "Resources/books for designing heists" — "I suck at running heists… Are there any GM books that talk about that?"
+
+### `suggestion`
+
+**Definition:** Primarily recommends an approach, tool, or game to readers.
+
+**Example 1:**
+> "HyperspaceD6 V3 has been released!" — announces the full release, lists what's new, and says "if you've been missing D6, give it a look."
+
+**Example 2:**
+> "If you haven't tried RPGtrader.com yet, you really should" — recommends the site and describes its filters (by system, genre, setting, player count), encouraging readers to use it.
+
+### `experience_report`
+
+**Definition:** Primarily recounts personal gameplay experiences or campaign progress, rather than arguing a point, seeking help, or offering advice.
+
+**Example 1:**
+> "We broke into a guy's house for a good reason. The town did not see it that way" — a narrative of what the party did, how the town reacted, and how it changed the rest of the session.
+
+**Example 2:**
+> "A Dangerous Thing to Know" — the author recounts being given a book at age 11, how its RPG chapter shaped their start in the hobby, and how they rediscovered it recently.
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `suggestion` vs `experience_report` (with `analysis` as a close third).
+Borderline post: "Who gets inconvenienced if your character never comes home?" — a GM
+describes a question they now ask players at character creation (a recommendation),
+tells how it worked in their own small-town campaign (an experience), and argues why
+tragic backstories feel disconnected (an argument).
 
-**The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
+**The decision rule I used every time:** Label by what the post asks the reader to *do
+or believe* at the end. If it tells readers to adopt a practice, tool or game, it's
+`suggestion`, even when most of the text is a personal anecdote. If it only recounts what
+happened with no recommendation, it's `experience_report`. If the central point is a claim
+about *why* something is true (not "do X"), it's `analysis`. Posts whose main sentence is
+a question to the community are `help_request` regardless of how much backstory they have.
 
 
 
