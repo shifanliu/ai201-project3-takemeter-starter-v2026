@@ -396,26 +396,47 @@ learn any boundary with `help_request`, in either direction; it collapsed to the
 <!-- MET or MISSED against LAST UNIT's target. The target has to hold across
      all three seeds, not turn up sometimes. -->
 
+Criteria are the five in `criteria.md`, unchanged. Run Log — Before above has the numbers.
+
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | >= 0.65 on every seed | **MISSED** | 0.424 on all three seeds, 0.226 below target. |
+| 2 | Every label F1 | >= 0.60 on every seed | **MISSED** | Only `help_request` is close (0.596, still under 0.60); `analysis`, `suggestion` and `experience_report` are 0.000 on all three seeds. |
+| 3 | `analysis` called `suggestion` | <= 30% on every seed | **MET** (hollow) | 0 of 7 `analysis` posts were called `suggestion` on every seed, so the number passes. But the model never predicted `suggestion` at all, so this says nothing about whether it can tell the two apart. |
+| 4 | Label balance in `labels.csv` | each label 15%-50% | **MISSED** | `suggestion` is 28 of 214 rows = 13.1%, under the 15% floor. `help_request` is 43.0%, under the 50% cap. |
+| 5 | Confident half >= 0.80 accurate | >= 0.80 on every seed | **MISSED** | The saved results hold the top third, not the top half: 0.818, 0.727, 0.636. For seed 2024, 4 of its 11 most confident posts were wrong, so its top 17 (half of 33) has at most 13 correct = 0.765 whatever the other 6 are. One seed below 0.80 is enough to miss. |
 
 **Diagnoses**
 
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
+**Criteria 1 and 2 (accuracy 0.424, three labels at F1 0.000): the model has not learned the
+task, it predicts the majority label.** How I know: the confusion matrix has all 33 test
+posts in the `help_request` column on all three seeds, and accuracy 0.424 is exactly
+14/33, the share of `help_request`. Training loss only fell from about 1.35 to 1.25, and
+validation accuracy sat at 0.4375 after every epoch on every seed (also exactly the
+`help_request` share), so training barely moved the model. With 149 training posts, batch
+size 16 and 3 epochs it took only about 28 optimizer steps at learning rate 2e-5, which is
+a very short run. So the leading cause is training that is too short for this data, with a
+task that may also be out of reach from about 200 posts: the model did not even separate
+`analysis` (33 training posts) from `help_request`.
 
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
+**Criterion 3 (met only because the model never says `suggestion`):** not a real pass. It
+tells me nothing about the `analysis` / `suggestion` boundary, which is still untested.
 
+**Criterion 4 (`suggestion` at 13.1%):** too few examples for one label. I labelled 28
+`suggestion` posts, 19 of them in training and 5 in test, so even a good model has little to
+learn from or be scored on for that label. This one is about my data, not the model.
 
+**Criterion 5 (confidence):** the model's confidence is nearly flat: mean confidence is
+0.44 when right and 0.42 when wrong. The model was almost equally unsure about everything,
+because it only ever picks the one label. The more confident third being more accurate
+than the least confident third (0.82 vs 0.18 on seed 42) mostly reflects which posts
+happen to be `help_request`, not calibrated confidence.
+
+**Evidence I do not have yet:** the Agreement Report against the staff set. It is the one
+instrument that can separate a labelling problem from a model problem, and I have not got
+the staff labels yet, so I cannot say whether my own labelling was inconsistent on any
+boundary. Everything above rests on the confusion matrix and training curves only. I will
+revisit the diagnoses of criteria 1 and 2 once the agreement check is run.
 
 ---
 
